@@ -19,35 +19,13 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Checkerboard1:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Checkerboard2:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bc99ebba564411249985617a7544e606, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex1:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex2:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _CheckerboardHeight: 6
-    - _CheckerboardWidth: 6
     - _Columns: 6
     - _Rows: 6
     m_Colors:
-    - _Checkerboard1Color: {r: 0.3018868, g: 0.064079754, b: 0.064079754, a: 1}
-    - _Checkerboard2Color: {r: 0.5566038, g: 0.35969207, b: 0.35969207, a: 1}
-    - _Color1: {r: 0.3962264, g: 0.19250624, b: 0.1966664, a: 1}
-    - _Color2: {r: 0.6320754, g: 0.4442417, b: 0.4442417, a: 1}
-    - _Tiling: {r: 1.27, g: 1, b: 1, a: 1}
-    - _TilingAndOffset: {r: 1, g: 1, b: 0, a: 0}
+    - _Color1: {r: 0.3962264, g: 0.17007832, b: 0.17007832, a: 1}
+    - _Color2: {r: 0.6226415, g: 0.41411534, b: 0.41411534, a: 1}

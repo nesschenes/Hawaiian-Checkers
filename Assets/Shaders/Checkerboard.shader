@@ -3,9 +3,8 @@
     Properties
     {
         _Color1 ("Color", Color) = (1, 1, 1, 1)
-        _MainTex1 ("MainTex", 2D) = "white" {}
         _Color2 ("Color", Color) = (1, 1, 1, 1)
-        _MainTex2 ("MainTex", 2D) = "white" {}
+        _MainTex ("MainTex", 2D) = "white" {}
         _Rows ("Rows", Int) = 6
         _Columns("Columns", Int) = 6
     }
@@ -36,8 +35,7 @@
 
             float4 _Color1;
             float4 _Color2;
-            sampler2D _MainTex1;
-            sampler2D _MainTex2;
+            sampler2D _MainTex;
             float _Rows;
             float _Columns;
 
@@ -58,10 +56,9 @@
                 float rowOdd = 1 - rowEven;
                 float colEven = floor(uv.y % 2);
                 float colOdd = 1 - colEven;
-                float mainTex1Stength = rowEven * colOdd + rowOdd * colEven;
-                fixed4 color1 = tex2D(_MainTex1, uv) * mainTex1Stength * _Color1;
-                fixed4 color2 = tex2D(_MainTex2, uv) * (1 - mainTex1Stength) * _Color2;
-                return color1 + color2;
+                float strength = rowEven * colOdd + rowOdd * colEven;
+                float color = tex2D(_MainTex, uv);
+                return color * (_Color1 * strength + _Color2 * (1 - strength));
             }
             ENDCG
         }
