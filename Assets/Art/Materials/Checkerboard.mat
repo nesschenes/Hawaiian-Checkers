@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Checkerboard
   m_Shader: {fileID: 4800000, guid: 2fb04ef09ac09c64dab77be46ebd76c4, type: 3}
-  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA _USERANDMASK_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -27,5 +27,5 @@ Material:
     - _Columns: 6
     - _Rows: 6
     m_Colors:
-    - _Color1: {r: 0.3962264, g: 0.17007832, b: 0.17007832, a: 1}
-    - _Color2: {r: 0.6226415, g: 0.41411534, b: 0.41411534, a: 1}
+    - _Color1: {r: 0.8867924, g: 0.6567283, b: 0.6567283, a: 1}
+    - _Color2: {r: 0.6132076, g: 0.37891603, b: 0.37891603, a: 1}
