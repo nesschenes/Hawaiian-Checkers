@@ -5,7 +5,7 @@ namespace Hawaiian.Camera
 {
     public class Scaler : MonoBehaviour
     {
-        void Start()
+        void Awake()
         {
             SetWidth(6);
         }
