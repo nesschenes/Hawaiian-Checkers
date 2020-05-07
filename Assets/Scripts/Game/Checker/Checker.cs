@@ -1,16 +1,53 @@
-﻿using UnityEngine;
+﻿using Hawaiian.Sprite;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace Hawaiian.Game
 {
+    public enum CheckerState
+    {
+        NothingToDo = 0,
+        Interactable = 1,
+        WaitToRemove = 2,
+        WaitToMove = 3,
+    }
+
     public class Checker : MonoBehaviour
     {
         [SerializeField]
         SpriteRenderer m_Icon = null;
         [SerializeField]
-        SpriteRenderer m_Highlight = null;
+        SpriteRenderer m_HighlightIcon = null;
+        [SerializeField]
+        SpriteRenderer m_SelectedIcon = null;
+        [SerializeField]
+        Button m_Button = null;
 
         public CheckerData Data { get; private set; }
-        public bool Interactable { get; private set; }
+        public CheckerState State { get; private set; }
+
+        public CheckerEvent OnDown = new CheckerEvent();
+        public CheckerEvent OnUp = new CheckerEvent();
+        public CheckerEvent OnUpAsButton = new CheckerEvent();
+
+        public class CheckerEvent : UnityEvent<Checker> { }
+
+        void Awake()
+        {
+            m_Button.OnDown.AddListener(OnButtonDown);
+            m_Button.OnUp.AddListener(OnButtonUp);
+            m_Button.OnUpAsButton.AddListener(OnButtonUpAsButton);
+        }
+
+        void OnDestroy()
+        {
+            m_Button.OnDown.RemoveAllListeners();
+            m_Button.OnUp.RemoveAllListeners();
+            m_Button.OnUpAsButton.RemoveAllListeners();
+            OnDown.RemoveAllListeners();
+            OnUp.RemoveAllListeners();
+            OnUpAsButton.RemoveAllListeners();
+        }
 
         public void Init(CheckerData data)
         {
@@ -22,15 +59,32 @@ namespace Hawaiian.Game
             SetColor(data.Color);
         }
 
-        public void Refresh()
+        public void SetAsNothingToDo()
         {
-            SetHighlight(Interactable);
+            State = CheckerState.NothingToDo;
+            OnUpAsButton.RemoveAllListeners();
+            SetHighlight(false);
         }
 
-        public void SetRemovable()
+        public void SetAsInteractable()
         {
-            Interactable = true;
+            State = CheckerState.Interactable;
             SetHighlight(true);
+            SetSelected(false);
+        }
+
+        public void SetAsWaitToRemove()
+        {
+            State = CheckerState.WaitToRemove;
+            SetHighlight(false);
+            SetSelected(true);
+        }
+
+        public void SetAsWaitToMove()
+        {
+            State = CheckerState.WaitToMove;
+            SetHighlight(false);
+            SetSelected(true);
         }
 
         public void SetName(string name)
@@ -55,12 +109,32 @@ namespace Hawaiian.Game
 
         public void SetHighlight(bool active)
         {
-            m_Highlight.enabled = active;
+            m_HighlightIcon.enabled = active;
+        }
+
+        public void SetSelected(bool active)
+        {
+            m_SelectedIcon.enabled = active;
         }
 
         public void Dispose()
         {
             gameObject.SetActive(false);
+        }
+
+        void OnButtonDown()
+        {
+            OnDown.Invoke(this);
+        }
+
+        void OnButtonUp()
+        {
+            OnUp.Invoke(this);
+        }
+
+        void OnButtonUpAsButton()
+        {
+            OnUpAsButton.Invoke(this);
         }
     }
 }
