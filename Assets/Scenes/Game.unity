@@ -333,7 +333,7 @@ MonoBehaviour:
     type: 3}
   m_CheckerPool: {fileID: 1973292451}
   m_CheckerColor:
-  - {r: 0, g: 0, b: 0, a: 1}
+  - {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1782135917
 Transform:
