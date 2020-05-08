@@ -22,7 +22,7 @@ namespace Hawaiian.Game
             GameStep = GameStep.GameBegin;
 
             m_CheckerManager.OnRemoveStepDone += OnRemoveStepDone;
-            m_CheckerManager.SetupCheckers(2, BoardSize.Six);
+            m_CheckerManager.SetupCheckers(2, 6);
 
             NextStep();
         }
@@ -54,6 +54,7 @@ namespace Hawaiian.Game
         void DoMoveStepJob()
         {
             GameStep = GameStep.Move;
+            m_CheckerManager.DoMoveStepJob();
         }
 
         void OnRemoveStepDone()

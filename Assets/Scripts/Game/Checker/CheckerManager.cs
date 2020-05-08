@@ -3,51 +3,38 @@ using UnityEngine;
 
 namespace Hawaiian.Game
 {
-    public class CheckerManager : MonoBehaviour
+    public partial class CheckerManager : MonoBehaviour
     {
-        [SerializeField]
-        Checker m_Checker = null;
-        [SerializeField]
-        Transform m_CheckerPool = null;
-        [SerializeField]
-        Color[] m_CheckerColor = null;
-
         public Action OnRemoveStepDone = null;
 
         bool IsThisRoundOver => NextTurn < mCurrentTurn;
-        int NextTurn => mCurrentTurn == mTotalTurnPerRound ? 1 : mCurrentTurn + 1;
-        int mCurrentTurn = 1;
-        int mTotalTurnPerRound = 2;
-        BoardSize mBoardSize = BoardSize.Six;
-        Checker[] mCheckers = null;
-        Checker mSelectedChecker = null;
-        int mLastRemovedCheckerIndex = 0;
+        int NextTurn => mCurrentTurn == mTurnCountPerRound ? 1 : mCurrentTurn + 1;
 
-        public void SetupCheckers(int turnPerRound, BoardSize size)
+        public void SetupCheckers(int turnCountPerRound, int rowsCount)
         {
-            mTotalTurnPerRound = turnPerRound;
-            mBoardSize = size;
-            var count = (int)size;
-            mCheckers = new Checker[count * count];
+            mTurnCountPerRound = turnCountPerRound;
+            mBoardRowsCount = rowsCount;
+            mBoardGridCount = rowsCount * rowsCount;
+            mCheckers = new Checker[mBoardGridCount];
 
-            var halfWidth = count / 2f;
-            var startPos = new Vector2(halfWidth * (-1) + 0.5f, halfWidth - 0.5f); // left-top
-            for (var i = 0; i < count; i++) // rows
+            var halfWidth = rowsCount / 2f;
+            var startPos = new Vector2(halfWidth * (-1) + 0.5f, -halfWidth + 0.5f); // left-top
+            for (var i = 0; i < rowsCount; i++) // rows
             {
-                for (var j = 0; j < count; j++) // columns
+                for (var j = 0; j < rowsCount; j++) // columns
                 {
-                    var team = (i + j) % 2;
+                    var team = (i + j + 1) % 2;
                     var data = new CheckerData
                     {
                         Name = $"Checker {j + 1} - {i + 1}",
-                        Index = i * count + j,
+                        Coordinate = new Coordinate(j, i),
                         Team = team,
-                        Position = startPos + new Vector2(j, -i),
+                        Position = startPos + new Vector2(j, i),
                         Color = m_CheckerColor[team],
                     };
 
                     var checker = SpawnChecker(data);
-                    mCheckers[i * count + j] = checker;
+                    mCheckers[i * rowsCount + j] = checker;
                 }
             }
         }
@@ -58,64 +45,62 @@ namespace Hawaiian.Game
             DoNextRemoveTurnJob();
         }
 
+        public void DoMoveStepJob()
+        {
+            mCurrentTurn = 0;
+            DoNextMoveTurnJob();
+        }
+
         void DoNextRemoveTurnJob()
         {
             ++mCurrentTurn;
             switch (mCurrentTurn)
             {
                 case 1:
-                    {
-                        var totalCount = mCheckers.Length;
-                        var rowCount = (int)mBoardSize;
-                        SetAsRemovable(mCheckers[totalCount / 2 + rowCount / 2 - rowCount - 1]);
-                        SetAsRemovable(mCheckers[totalCount / 2 + rowCount / 2]);
-                        SetAsRemovable(mCheckers[0]);
-                        SetAsRemovable(mCheckers[mCheckers.Length - 1]);
-                    }
+                {
+                    SetAsRemovable(new Coordinate(0, mBoardRowsCount - 1));
+                    SetAsRemovable(new Coordinate(mBoardRowsCount - 1, 0));
+                    SetAsRemovable(new Coordinate(mBoardRowsCount / 2 - 1, mBoardRowsCount / 2));
+                    SetAsRemovable(new Coordinate(mBoardRowsCount / 2, mBoardRowsCount / 2 - 1));
+                }
                     break;
                 case 2:
-                    {
-                        var rowCount = (int)mBoardSize;
-                        if (mLastRemovedCheckerIndex == 0)
-                        {
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex + 1]);
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex + rowCount]);
-                        }
-                        else if (mLastRemovedCheckerIndex == mCheckers.Length - 1)
-                        {
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex - 1]);
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex - rowCount]);
-                        }
-                        else
-                        {
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex - 1]);
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex + 1]);
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex - rowCount]);
-                            SetAsRemovable(mCheckers[mLastRemovedCheckerIndex + rowCount]);
-                        }
-                    }
+                {
+                    SetAroundAsRemovable(mLastEmptyCoordinate);
+                }
                     break;
             }
         }
 
-        Checker SpawnChecker(CheckerData data)
+        void DoNextMoveTurnJob()
         {
-            var checker = Instantiate(m_Checker, m_CheckerPool);
-            checker.Init(data);
+            ++mCurrentTurn;
+            foreach (var checker in mCheckers)
+            {
+                if (mCurrentTurn != checker.Data.Team + 1)
+                    continue;
 
-            return checker;
+                FindMovableCoordinate(checker.Data.Coordinate);
+            }
         }
 
-        void SetAsNothingToDo(Checker[] checkers)
+        void FindMovableCoordinate(Coordinate coordinate)
         {
-            foreach (var checker in checkers)
-                checker.SetAsNothingToDo();
-        }
+            var topCoordinate = coordinate + Coordinate.Top * 2;
+            if (InBoard(topCoordinate) && IsEmpty(topCoordinate) && !IsEmpty(coordinate + Coordinate.Top))
+                Debug.LogError(topCoordinate);
 
-        void SetAsRemovable(Checker checker)
-        {
-            checker.OnUpAsButton.AddListener(OnRemovableSelected);
-            checker.SetAsInteractable();
+            var downCoordinate = coordinate + Coordinate.Down * 2;
+            if (InBoard(downCoordinate) && IsEmpty(downCoordinate) && !IsEmpty(coordinate + Coordinate.Down))
+                Debug.LogError(downCoordinate);
+
+            var leftCoordinate = coordinate + Coordinate.Left * 2;
+            if (InBoard(leftCoordinate) && IsEmpty(leftCoordinate) && !IsEmpty(coordinate + Coordinate.Left))
+                Debug.LogError(leftCoordinate);
+
+            var rightCoordinate = coordinate + Coordinate.Right * 2;
+            if (InBoard(rightCoordinate) && IsEmpty(rightCoordinate) && !IsEmpty(coordinate + Coordinate.Right))
+                Debug.LogError(rightCoordinate);
         }
 
         void OnRemovableSelected(Checker checker)
@@ -124,8 +109,8 @@ namespace Hawaiian.Game
             {
                 if (mSelectedChecker != null)
                 {
-                    mSelectedChecker.Dispose();
-                    mLastRemovedCheckerIndex = mSelectedChecker.Data.Index;
+                    mSelectedChecker.SetAsDead();
+                    mLastEmptyCoordinate = mSelectedChecker.Data.Coordinate;
 
                     if (IsThisRoundOver)
                     {
@@ -144,11 +129,6 @@ namespace Hawaiian.Game
                 mSelectedChecker = checker;
                 mSelectedChecker?.SetAsWaitToRemove();
             }
-        }
-
-        void OnUp(Checker checker)
-        {
-
         }
     }
 }

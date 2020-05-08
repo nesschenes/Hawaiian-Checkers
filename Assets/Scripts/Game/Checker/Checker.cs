@@ -7,9 +7,11 @@ namespace Hawaiian.Game
     public enum CheckerState
     {
         NothingToDo = 0,
-        Interactable = 1,
+        Removable = 1,
         WaitToRemove = 2,
-        WaitToMove = 3,
+        Movable = 3,
+        WaitToMove = 4,
+        Dead = 999,
     }
 
     public class Checker : MonoBehaviour
@@ -66,9 +68,9 @@ namespace Hawaiian.Game
             SetHighlight(false);
         }
 
-        public void SetAsInteractable()
+        public void SetAsRemovable()
         {
-            State = CheckerState.Interactable;
+            State = CheckerState.Removable;
             SetHighlight(true);
             SetSelected(false);
         }
@@ -80,11 +82,24 @@ namespace Hawaiian.Game
             SetSelected(true);
         }
 
+        public void SetAsMovable()
+        {
+            State = CheckerState.Movable;
+            SetHighlight(true);
+            SetSelected(false);
+        }
+
         public void SetAsWaitToMove()
         {
             State = CheckerState.WaitToMove;
             SetHighlight(false);
             SetSelected(true);
+        }
+
+        public void SetAsDead()
+        {
+            State = CheckerState.Dead;
+            gameObject.SetActive(false);
         }
 
         public void SetName(string name)
