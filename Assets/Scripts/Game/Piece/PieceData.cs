@@ -2,12 +2,12 @@
 
 namespace Hawaiian.Game
 {
-    public class CheckerData
+    public class PieceData
     {
         public string Name;
-        public Coordinate Coordinate;
         public int Team;
-        public Vector2 Position;
+        public PieceState State;
+        public Coordinate Coordinate;
         public Color Color;
     }
 
@@ -15,11 +15,33 @@ namespace Hawaiian.Game
     {
         public readonly int X;
         public readonly int Y;
+        public int Length => X + Y;
+        public Coordinate Direction => new Coordinate(NoramlizeX(), NoramlizeY());
 
         public Coordinate(int x, int y)
         {
             X = x;
             Y = y;
+        }
+
+        int NoramlizeX()
+        {
+            if (X > 0)
+                return 1;
+            else if (X < 0)
+                return -1;
+            else
+                return 0;
+        }
+
+        int NoramlizeY()
+        {
+            if (Y > 0)
+                return 1;
+            else if (Y < 0)
+                return -1;
+            else
+                return 0;
         }
 
         public static Coordinate Zero { get; } = new Coordinate(0, 0);
@@ -44,6 +66,11 @@ namespace Hawaiian.Game
         public static Coordinate operator *(Coordinate a, int b)
         {
             return new Coordinate(a.X * b, a.Y * b);
+        }
+
+        public static Coordinate operator /(Coordinate a, int b)
+        {
+            return new Coordinate(a.X / b, a.Y / b);
         }
 
         public static bool operator ==(Coordinate a, Coordinate b)

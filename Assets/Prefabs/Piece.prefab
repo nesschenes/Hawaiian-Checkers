@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1393382739305910358}
   - component: {fileID: 6739926362493234464}
-  - component: {fileID: 373389503176439140}
+  - component: {fileID: 8197194327667874380}
   - component: {fileID: 6080937365200919774}
   m_Layer: 0
   m_Name: Icon
@@ -70,7 +70,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1798704385
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: bc99ebba564411249985617a7544e606, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &373389503176439140
+--- !u!61 &8197194327667874380
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,7 +93,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -121,24 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54319dd33140bb149aaadaefb73bb713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  OnExit:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDown:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDrag:
-    m_PersistentCalls:
-      m_Calls: []
-  OnUp:
-    m_PersistentCalls:
-      m_Calls: []
-  OnUpAsButton:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &3153861808796392201
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +132,7 @@ GameObject:
   - component: {fileID: 2358327173412371234}
   - component: {fileID: 1718087483454800692}
   m_Layer: 0
-  m_Name: Checker
+  m_Name: Piece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,10 +167,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed88b614e62405f4fa55fc674eb1cc17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Button: {fileID: 6080937365200919774}
   m_Icon: {fileID: 6739926362493234464}
   m_HighlightIcon: {fileID: 7056826206034160680}
   m_SelectedIcon: {fileID: 5980253210902188432}
-  m_Button: {fileID: 6080937365200919774}
 --- !u!1 &5914808075355377660
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,7 +239,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1798704385
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2bbefb881f21f554ebe282697024cab3, type: 3}
   m_Color: {r: 1, g: 0, b: 0.039604187, a: 1}
@@ -338,7 +320,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1798704385
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2bbefb881f21f554ebe282697024cab3, type: 3}
   m_Color: {r: 1, g: 0.77432334, b: 0.32549024, a: 1}

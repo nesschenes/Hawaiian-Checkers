@@ -3,6 +3,8 @@ using UnityEngine.Events;
 
 namespace Hawaiian.Sprite
 {
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(Collider2D))]
     public class Button : MonoBehaviour
     {
         public UnityEvent OnEnter = new UnityEvent();
@@ -11,6 +13,23 @@ namespace Hawaiian.Sprite
         public UnityEvent OnDrag = new UnityEvent();
         public UnityEvent OnUp = new UnityEvent();
         public UnityEvent OnUpAsButton = new UnityEvent();
+
+        Collider2D mCollider = null;
+
+        void Awake()
+        {
+            mCollider = gameObject.GetComponent<Collider2D>();
+        }
+
+        public void Active()
+        {
+            mCollider.enabled = true;
+        }
+
+        public void Deactive()
+        {
+            mCollider.enabled = false;
+        }
 
         void OnMouseEnter()
         {

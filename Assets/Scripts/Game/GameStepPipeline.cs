@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Hawaiian.Game
 {
@@ -10,19 +11,20 @@ namespace Hawaiian.Game
         GameOver,
     }
 
-    public class GameLogic : MonoBehaviour
+    public class GameStepPipeline : MonoBehaviour
     {
         [SerializeField]
-        CheckerManager m_CheckerManager = null;
+        GameManager m_CheckerManager = null;
 
         public GameStep GameStep { get; private set; }
 
-        void Start()
+        IEnumerator Start()
         {
             GameStep = GameStep.GameBegin;
 
-            m_CheckerManager.OnRemoveStepDone += OnRemoveStepDone;
-            m_CheckerManager.SetupCheckers(2, 6);
+            m_CheckerManager.Setup(2, 6);
+
+            yield return null;
 
             NextStep();
         }
@@ -48,6 +50,7 @@ namespace Hawaiian.Game
         void DoRemoveStepJob()
         {
             GameStep = GameStep.Remove;
+            m_CheckerManager.OnRemoveStepDone += OnRemoveStepDone;
             m_CheckerManager.DoRemoveStepJob();
         }
 
@@ -59,6 +62,7 @@ namespace Hawaiian.Game
 
         void OnRemoveStepDone()
         {
+            m_CheckerManager.OnRemoveStepDone -= OnRemoveStepDone;
             NextStep();
         }
     }
