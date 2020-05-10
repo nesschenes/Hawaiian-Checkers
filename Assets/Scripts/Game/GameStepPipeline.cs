@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Konane.Utility;
+using System.Collections;
 using UnityEngine;
 
 namespace Konane.Game
@@ -18,11 +19,16 @@ namespace Konane.Game
 
         public GameStep GameStep { get; private set; }
 
+        void Awake()
+        {
+            Notify.LoadLobby += DoBackToLobbyJob;
+        }
+
         IEnumerator Start()
         {
             GameStep = GameStep.GameBegin;
 
-            Notify.RefreshScaler.Invoke();
+            Notify.RefreshScaler();
 
             m_GameManager.Generate();
 
@@ -34,6 +40,8 @@ namespace Konane.Game
         void OnDestroy()
         {
             m_GameManager.OnRemoveStepDone -= OnRemoveStepDone;
+            m_GameManager.OnMoveStepDone -= OnMoveStepDone;
+            Notify.LoadLobby -= DoBackToLobbyJob;
         }
 
         void NextStep()
@@ -70,13 +78,15 @@ namespace Konane.Game
         }
 
         void DoGameOverJob()
-        { 
-            // show game result
+        {
+            GameStep = GameStep.GameOver;
+            Notify.GameResult(m_GameManager.Winner);
         }
 
         void DoBackToLobbyJob()
-        { 
-            // load scene
+        {
+            SceneUtility.LoadLobbyScene();
+            SceneUtility.LoadLobbyUIScene();
         }
 
         void OnRemoveStepDone()

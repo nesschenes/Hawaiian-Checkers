@@ -9,6 +9,7 @@ namespace Konane.Game
     {
         /// <summary> the starting point in world space </summary>
         public Vector2 BoardStartPosition { get; private set; }
+        public int Winner { get; private set; }
 
         public Action OnRemoveStepDone = null;
         public Action OnMoveStepDone = null;
@@ -102,8 +103,7 @@ namespace Konane.Game
 
         void DoNextMoveTurnJob()
         {
-            var nextTurn = mCurrentPieceTeam + 1;
-            mCurrentPieceTeam = nextTurn > mPieceTeamCount ? 1 : nextTurn;
+            mCurrentPieceTeam = NextPieceType;
             var hasMovablePiece = false;
             foreach (var piece in mPieces)
             {
@@ -123,7 +123,10 @@ namespace Konane.Game
             Debug.LogFormat("Start {0} Move-Turn", mCurrentPieceTeam);
 
             if (!hasMovablePiece)
-                SetGameResult(mCurrentPieceTeam, false);
+            {
+                Winner = NextPieceType;
+                OnMoveStepDone.Invoke();
+            }
         }
 
         void OnRemovablePieceSelected(Piece piece)
@@ -207,12 +210,6 @@ namespace Konane.Game
 
             if (nextCoordinate != target)
                 MovePieceToCoordinate(piece, target);
-        }
-
-        void SetGameResult(int turn, bool win)
-        {
-            var message = win ? $"{turn} Win !" : $"{turn} Lose !";
-            Debug.LogError(message);
         }
     }
 }

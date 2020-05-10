@@ -90,7 +90,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 322759417931894334}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -121,6 +121,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54319dd33140bb149aaadaefb73bb713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUp:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpAsButton:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3153861808796392201
 GameObject:
   m_ObjectHideFlags: 0
