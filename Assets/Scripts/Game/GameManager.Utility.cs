@@ -1,17 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public partial class GameManager
     {
-        public static Vector2 StartPosition { get; private set; }
-
-        public static Vector2 ConvertToPosition(Coordinate coordinate)
-        {
-            return StartPosition + new Vector2(coordinate.X, coordinate.Y);
-        }
-
         Board SpawnBoard(BoardData data)
         {
             var boardUnit = Instantiate(m_Board, m_BoardPool);
@@ -21,9 +13,9 @@ namespace Hawaiian.Game
 
         Piece SpawnPiece(PieceData data)
         {
-            var checker = Instantiate(m_Piece, m_PiecePool);
-            checker.Init(data);
-            return checker;
+            var piece = Instantiate(m_Piece, m_PiecePool);
+            piece.Init(data);
+            return piece;
         }
 
         bool TryGetBoard(Coordinate coordinate, out Board result)
@@ -75,7 +67,7 @@ namespace Hawaiian.Game
         {
             foreach (var board in boards)
             {
-                board.ClearEvents();
+                board.ClearInputEvents();
                 board.SetState(BoardState.None);
             }
         }
@@ -114,7 +106,7 @@ namespace Hawaiian.Game
             if (!TryGetPiece(coordinate, out var piece))
                 return;
 
-            piece.OnUpAsButton.AddListener(OnRemovablePieceSelected);
+            piece.OnDown.AddListener(OnRemovablePieceSelected);
             piece.SetAsRemovable();
         }
 
@@ -123,7 +115,7 @@ namespace Hawaiian.Game
             if (!TryGetPiece(coordinate, out var piece))
                 return;
 
-            piece.OnUpAsButton.AddListener(OnMovablePieceSelected);
+            piece.OnDown.AddListener(OnMovablePieceSelected);
             piece.SetAsMovable();
         }
 

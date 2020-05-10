@@ -2,30 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
-    public partial class GameManager : MonoBehaviour
+    /// <summary> The Manager of Boards and Pieces </summary>
+    public partial class GameManager : MonoSingleton<GameManager>
     {
+        /// <summary> the starting point in world space </summary>
+        public Vector2 BoardStartPosition { get; private set; }
+
         public Action OnRemoveStepDone = null;
+        public Action OnMoveStepDone = null;
 
-        bool IsThisRoundOver => NextTurn < mCurrentTurn;
-        int NextTurn => mCurrentTurn == mTurnCountPerRound ? 1 : mCurrentTurn + 1;
+        bool IsThisRoundOver => NextPieceType < mCurrentPieceTeam;
+        int NextPieceType => mCurrentPieceTeam == mPieceTeamCount ? 1 : mCurrentPieceTeam + 1;
 
-        public void Setup(int turnCountPerRound, int rowsCount)
+        public void Generate()
         {
-            mTurnCountPerRound = turnCountPerRound;
-            mBoardRowsCount = rowsCount;
-            mBoardGridCount = rowsCount * rowsCount;
+            mPieceTeamCount = GameSettings.PieceTypeCount;
+            mBoardRowsCount = GameSettings.BoardRowsCount;
+            mBoardGridCount = mBoardRowsCount * mBoardRowsCount;
             mBoards = new Board[mBoardGridCount];
             mPieces = new Piece[mBoardGridCount];
 
-            var halfWidth = rowsCount / 2f;
-            StartPosition = new Vector2(halfWidth * (-1) + 0.5f, -halfWidth + 0.5f); // left-top
-            for (var i = 0; i < rowsCount; i++) // rows
+            var halfWidth = mBoardRowsCount / 2f;
+            BoardStartPosition = new Vector2(halfWidth * (-1) + 0.5f, -halfWidth + 0.5f); // left-top
+
+            for (var i = 0; i < mBoardRowsCount; i++) // rows
             {
-                for (var j = 0; j < rowsCount; j++) // columns
+                for (var j = 0; j < mBoardRowsCount; j++) // columns
                 {
-                    var index = i * rowsCount + j;
+                    var index = i * mBoardRowsCount + j;
                     var team = (i + j + 1) % 2 + 1; // 1, 2, 1, 2...
                     var coordinate = new Coordinate(j, i);
 
@@ -55,25 +61,25 @@ namespace Hawaiian.Game
                 }
             }
 
-            Debug.LogFormat("Setup {0}x{0} Boards & Pieces", rowsCount);
+            Debug.LogFormat("Generate {0}x{0} Boards & Pieces", mBoardRowsCount);
         }
 
         public void DoRemoveStepJob()
         {
-            mCurrentTurn = 0;
+            mCurrentPieceTeam = 0;
             DoNextRemoveTurnJob();
         }
 
         public void DoMoveStepJob()
         {
-            mCurrentTurn = 0;
+            mCurrentPieceTeam = 0;
             DoNextMoveTurnJob();
         }
 
         void DoNextRemoveTurnJob()
         {
-            ++mCurrentTurn;
-            switch (mCurrentTurn)
+            ++mCurrentPieceTeam;
+            switch (mCurrentPieceTeam)
             {
                 case 1:
                 {
@@ -91,20 +97,20 @@ namespace Hawaiian.Game
                     break;
             }
 
-            Debug.LogFormat("Start Turn-Remove: {0} !", mCurrentTurn);
+            Debug.LogFormat("Start {0} Remove-Turn", mCurrentPieceTeam);
         }
 
         void DoNextMoveTurnJob()
         {
-            var nextTurn = mCurrentTurn + 1;
-            mCurrentTurn = nextTurn > mTurnCountPerRound ? 1 : nextTurn;
+            var nextTurn = mCurrentPieceTeam + 1;
+            mCurrentPieceTeam = nextTurn > mPieceTeamCount ? 1 : nextTurn;
             var hasMovablePiece = false;
             foreach (var piece in mPieces)
             {
                 if (piece.State == PieceState.Dead)
                     continue;
 
-                if (mCurrentTurn != piece.Team)
+                if (mCurrentPieceTeam != piece.Team)
                     continue;
 
                 if (IsPieceMovable(piece.Coordinate))
@@ -114,10 +120,10 @@ namespace Hawaiian.Game
                 }
             }
 
-            Debug.LogFormat("Start Turn-Move: {0} !", mCurrentTurn);
+            Debug.LogFormat("Start {0} Move-Turn", mCurrentPieceTeam);
 
             if (!hasMovablePiece)
-                SetGameResult(mCurrentTurn, false);
+                SetGameResult(mCurrentPieceTeam, false);
         }
 
         void OnRemovablePieceSelected(Piece piece)

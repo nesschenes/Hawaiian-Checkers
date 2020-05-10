@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Hawaiian.Sprite
+namespace Konane.Renderer
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Collider2D))]

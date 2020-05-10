@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public enum GameStep
     {
@@ -14,7 +14,7 @@ namespace Hawaiian.Game
     public class GameStepPipeline : MonoBehaviour
     {
         [SerializeField]
-        GameManager m_CheckerManager = null;
+        GameManager m_GameManager = null;
 
         public GameStep GameStep { get; private set; }
 
@@ -22,7 +22,9 @@ namespace Hawaiian.Game
         {
             GameStep = GameStep.GameBegin;
 
-            m_CheckerManager.Setup(2, 6);
+            Notify.RefreshScaler.Invoke();
+
+            m_GameManager.Generate();
 
             yield return null;
 
@@ -31,7 +33,7 @@ namespace Hawaiian.Game
 
         void OnDestroy()
         {
-            m_CheckerManager.OnRemoveStepDone -= OnRemoveStepDone;
+            m_GameManager.OnRemoveStepDone -= OnRemoveStepDone;
         }
 
         void NextStep()
@@ -44,25 +46,48 @@ namespace Hawaiian.Game
                 case GameStep.Remove:
                     DoMoveStepJob();
                     break;
+                case GameStep.Move:
+                    DoGameOverJob();
+                    break;
+                case GameStep.GameOver:
+                    DoBackToLobbyJob();
+                    break;
             }
         }
 
         void DoRemoveStepJob()
         {
             GameStep = GameStep.Remove;
-            m_CheckerManager.OnRemoveStepDone += OnRemoveStepDone;
-            m_CheckerManager.DoRemoveStepJob();
+            m_GameManager.OnRemoveStepDone += OnRemoveStepDone;
+            m_GameManager.DoRemoveStepJob();
         }
 
         void DoMoveStepJob()
         {
             GameStep = GameStep.Move;
-            m_CheckerManager.DoMoveStepJob();
+            m_GameManager.OnMoveStepDone += OnMoveStepDone;
+            m_GameManager.DoMoveStepJob();
+        }
+
+        void DoGameOverJob()
+        { 
+            // show game result
+        }
+
+        void DoBackToLobbyJob()
+        { 
+            // load scene
         }
 
         void OnRemoveStepDone()
         {
-            m_CheckerManager.OnRemoveStepDone -= OnRemoveStepDone;
+            m_GameManager.OnRemoveStepDone -= OnRemoveStepDone;
+            NextStep();
+        }
+
+        void OnMoveStepDone()
+        {
+            m_GameManager.OnMoveStepDone -= OnMoveStepDone;
             NextStep();
         }
     }

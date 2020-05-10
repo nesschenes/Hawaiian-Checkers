@@ -1,21 +1,17 @@
 ﻿using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public partial class Board
     {
         void Awake()
         {
             m_Button.OnDown.AddListener(OnButtonDown);
-            m_Button.OnUp.AddListener(OnButtonUp);
-            m_Button.OnUpAsButton.AddListener(OnButtonUpAsButton);
         }
 
         void OnDestroy()
         {
             m_Button.OnDown.RemoveAllListeners();
-            m_Button.OnUp.RemoveAllListeners();
-            m_Button.OnUpAsButton.RemoveAllListeners();
         }
 
         void DoSetState(BoardState state)
@@ -32,9 +28,9 @@ namespace Hawaiian.Game
             }
         }
 
-        void DoSetPosition(Vector2 position)
+        void DoSetCoordinate(Coordinate coordinate)
         {
-            transform.position = position;
+            transform.position = GameUtility.CoordinateToPosition(coordinate);
         }
 
         void DoSetColor(Color color)
@@ -73,16 +69,6 @@ namespace Hawaiian.Game
         void OnButtonDown()
         {
             OnDown.Invoke(this);
-        }
-
-        void OnButtonUp()
-        {
-            OnUp.Invoke(this);
-        }
-
-        void OnButtonUpAsButton()
-        {
-            OnUpAsButton.Invoke(this);
         }
     }
 }

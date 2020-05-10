@@ -1,8 +1,8 @@
-﻿using Hawaiian.Sprite;
+﻿using Konane.Renderer;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public enum BoardState
     { 
@@ -19,6 +19,7 @@ namespace Hawaiian.Game
         [SerializeField]
         SpriteRenderer m_OccupiableIcon = null;
 
+        public bool HasPiece => Piece != null;
         public Piece Piece { get; private set; }
         public BoardData Data { get; private set; }
         public string Name { get => Data.Name; private set => Data.Name = value; }
@@ -26,12 +27,8 @@ namespace Hawaiian.Game
         public Coordinate Coordinate { get => Data.Coordinate; private set => Data.Coordinate = value; }
         public Color Color { get => Data.Color; private set => Data.Color = value; }
 
-        public bool HasPiece => Piece != null;
-
-        public BoardEvent OnDespawn = new BoardEvent();
         public BoardEvent OnDown = new BoardEvent();
-        public BoardEvent OnUp = new BoardEvent();
-        public BoardEvent OnUpAsButton = new BoardEvent();
+        public BoardEvent OnDespawn = new BoardEvent();
 
         public class BoardEvent : UnityEvent<Board> { }
 
@@ -41,18 +38,14 @@ namespace Hawaiian.Game
 
             DoSetState(data.State);
             DoSetColor(data.Color);
-
-            var position = GameManager.ConvertToPosition(data.Coordinate);
-            DoSetPosition(position);
+            DoSetCoordinate(data.Coordinate);
 
             SetRandomUV();
         }
 
-        public void ClearEvents()
+        public void ClearInputEvents()
         {
             OnDown.RemoveAllListeners();
-            OnUp.RemoveAllListeners();
-            OnUpAsButton.RemoveAllListeners();
         }
 
         public void SetPiece(Piece piece)

@@ -1,4 +1,4 @@
-﻿namespace Hawaiian
+﻿namespace Konane
 {
     public enum GameStep
     {

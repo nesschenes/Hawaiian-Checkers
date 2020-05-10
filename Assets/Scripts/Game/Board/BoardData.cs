@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public class BoardData
     {

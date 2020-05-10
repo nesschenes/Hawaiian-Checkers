@@ -1,8 +1,8 @@
-﻿using Hawaiian.Sprite;
+﻿using Konane.Renderer;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public enum PieceState
     {
@@ -32,10 +32,8 @@ namespace Hawaiian.Game
         public Coordinate Coordinate { get => Data.Coordinate; private set => Data.Coordinate = value; }
         public Color Color { get => Data.Color; private set => Data.Color = value; }
 
-        public PieceEvent OnDespawn = new PieceEvent();
         public PieceEvent OnDown = new PieceEvent();
-        public PieceEvent OnUp = new PieceEvent();
-        public PieceEvent OnUpAsButton = new PieceEvent();
+        public PieceEvent OnDespawn = new PieceEvent();
 
         public class PieceEvent : UnityEvent<Piece> { }
 
@@ -45,17 +43,13 @@ namespace Hawaiian.Game
 
             DoSetName(data.Name);
             DoSetTeam(data.Team);
+            DoSetCooridinate(data.Coordinate);
             DoSetColor(data.Color);
-
-            var position = GameManager.ConvertToPosition(data.Coordinate);
-            DoSetPosition(position);
         }
 
         public void ClearEvents()
         {
             OnDown.RemoveAllListeners();
-            OnUp.RemoveAllListeners();
-            OnUpAsButton.RemoveAllListeners();
         }
 
         public void SetAsNothingToDo()
@@ -129,15 +123,13 @@ namespace Hawaiian.Game
         public void SetCoordinate(Coordinate coordinate)
         {
             Coordinate = coordinate;
-            var position = GameManager.ConvertToPosition(coordinate);
-            DoSetPosition(position);
+            DoSetCooridinate(coordinate);
         }
 
         public void SetCoordinateInTween(Coordinate coordinate)
         {
             Coordinate = coordinate;
-            var position = GameManager.ConvertToPosition(coordinate);
-            DoSetPositionInTween(position);
+            DoSetCooridinateInTween(coordinate);
         }
 
         public void SetColor(Color color)

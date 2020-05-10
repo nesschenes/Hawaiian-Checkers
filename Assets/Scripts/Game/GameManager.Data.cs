@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Hawaiian.Game
+namespace Konane.Game
 {
     public partial class GameManager
     {
@@ -17,8 +17,8 @@ namespace Hawaiian.Game
         [SerializeField]
         Color[] m_PieceColor = null;
 
-        int mCurrentTurn = 1;
-        int mTurnCountPerRound = 2;
+        int mCurrentPieceTeam = 1;
+        int mPieceTeamCount = 2;
         int mBoardGridCount = 36;
         int mBoardRowsCount = 6;
         Board[] mBoards = null;
