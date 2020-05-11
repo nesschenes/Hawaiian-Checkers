@@ -48,11 +48,13 @@ namespace Konane.Game
 
         void SetNoneState()
         {
+            SetInteractable(false);
             ToggleOccupiable(false);
         }
 
         void ToggleOccupiable(bool active)
         {
+            SetInteractable(true);
             m_OccupiableIcon.enabled = active;
         }
 
