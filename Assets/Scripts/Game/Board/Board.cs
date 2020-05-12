@@ -70,5 +70,13 @@ namespace Konane.Game
             State = state;
             DoSetState(State);
         }
+
+        public void SetInteractable(bool enable)
+        {
+            if (enable)
+                m_Button.Active();
+            else
+                m_Button.Deactive();
+        }
     }
 }
