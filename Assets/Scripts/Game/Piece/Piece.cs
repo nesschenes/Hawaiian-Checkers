@@ -1,4 +1,6 @@
-﻿using Konane.Renderer;
+﻿using System;
+
+using Konane.Renderer;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -126,10 +128,10 @@ namespace Konane.Game
             DoSetCooridinate(coordinate);
         }
 
-        public void SetCoordinateInTween(Coordinate coordinate)
+        public void SetCoordinateInTween(Coordinate coordinate, Action onDone = null)
         {
             Coordinate = coordinate;
-            DoSetCooridinateInTween(coordinate);
+            DoSetCooridinateInTween(coordinate, onDone);
         }
 
         public void SetColor(Color color)

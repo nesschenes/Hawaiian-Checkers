@@ -199,11 +199,15 @@ namespace Konane.Game
                 fromBoard.SetPiece(null);
 
             var direction = (target - piece.Coordinate).Direction;
-            if (TryGetBoard(piece.Coordinate + direction, out var crossedBoard))
-                crossedBoard.Piece.SetAsDead();
+
+            void OnTweenComplete()
+            {
+                if (TryGetBoard(piece.Coordinate - direction, out var crossedBoard))
+                    crossedBoard.Piece.SetAsDead();
+            }
 
             var nextCoordinate = piece.Coordinate + direction * 2;
-            piece.SetCoordinateInTween(nextCoordinate);
+            piece.SetCoordinateInTween(nextCoordinate, OnTweenComplete);
 
             if (TryGetBoard(nextCoordinate, out var nextBoard))
                 nextBoard.SetPiece(piece);
