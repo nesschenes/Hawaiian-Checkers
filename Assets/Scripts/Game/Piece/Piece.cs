@@ -31,7 +31,8 @@ namespace Konane.Game
         public string Name { get => Data.Name; private set => Data.Name = value; } 
         public int Team { get => Data.Team; private set => Data.Team = value; }
         public PieceState State { get => Data.State; private set => Data.State = value; }
-        public Coordinate Coordinate { get => Data.Coordinate; private set => Data.Coordinate = value; }
+        public Coordinate Coordinate { get => Data.Coordinate; private set { Data.LastCoordinate = Data.Coordinate; Data.Coordinate = value; } }
+        public Coordinate LastCoordinate { get => Data.LastCoordinate; }
         public Color Color { get => Data.Color; private set => Data.Color = value; }
 
         public PieceEvent OnDown = new PieceEvent();

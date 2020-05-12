@@ -50,6 +50,7 @@ namespace Konane.Game
                         Team = team,
                         State = PieceState.None,
                         Coordinate = coordinate,
+                        LastCoordinate = coordinate,
                         Color = m_PieceColor[team - 1],
                     };
 
@@ -188,32 +189,36 @@ namespace Konane.Game
             SetBoardToNone(mBoards);
             SetPieceToNone(mPieces);
 
-            MovePieceToCoordinate(mSelectedPiece, board.Coordinate);
-
-            DoNextMoveTurnJob();
+            MovePieceToCoordinate(mSelectedPiece, board.Coordinate, DoNextMoveTurnJob);
         }
 
-        void MovePieceToCoordinate(Piece piece, Coordinate target)
+        void MovePieceToCoordinate(Piece piece, Coordinate target, Action onDone)
         {
+            if (piece.Coordinate == target)
+            {
+                onDone?.Invoke();
+                return;
+            }
+
             if (TryGetBoard(piece.Coordinate, out var fromBoard))
                 fromBoard.SetPiece(null);
 
             var direction = (target - piece.Coordinate).Direction;
-
-            void OnTweenComplete()
-            {
-                if (TryGetBoard(piece.Coordinate - direction, out var crossedBoard))
-                    crossedBoard.Piece.SetAsDead();
-            }
-
             var nextCoordinate = piece.Coordinate + direction * 2;
-            piece.SetCoordinateInTween(nextCoordinate, OnTweenComplete);
+            piece.SetCoordinateInTween(nextCoordinate, () => 
+            { 
+                OnPieceMoveComplete(piece); 
+                MovePieceToCoordinate(piece, target, onDone); 
+            });
+        }
 
-            if (TryGetBoard(nextCoordinate, out var nextBoard))
+        void OnPieceMoveComplete(Piece piece)
+        {
+            if (TryGetBoard((piece.Coordinate + piece.LastCoordinate) / 2, out var crossedBoard))
+                crossedBoard.Piece.SetAsDead();
+
+            if (TryGetBoard(piece.Coordinate, out var nextBoard))
                 nextBoard.SetPiece(piece);
-
-            if (nextCoordinate != target)
-                MovePieceToCoordinate(piece, target);
         }
     }
 }

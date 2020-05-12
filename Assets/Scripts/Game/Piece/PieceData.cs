@@ -8,6 +8,7 @@ namespace Konane.Game
         public int Team;
         public PieceState State;
         public Coordinate Coordinate;
+        public Coordinate LastCoordinate;
         public Color Color;
     }
 

@@ -36,6 +36,7 @@ namespace Konane.Game
         {
             Data = data;
 
+            DoSetName(data.Name);
             DoSetState(data.State);
             DoSetColor(data.Color);
             DoSetCoordinate(data.Coordinate);
@@ -46,6 +47,12 @@ namespace Konane.Game
         public void ClearInputEvents()
         {
             OnDown.RemoveAllListeners();
+        }
+
+        public void SetName(string name)
+        {
+            Name = name;
+            DoSetName(name);
         }
 
         public void SetPiece(Piece piece)

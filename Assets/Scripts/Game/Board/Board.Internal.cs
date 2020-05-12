@@ -14,6 +14,11 @@ namespace Konane.Game
             m_Button.OnDown.RemoveAllListeners();
         }
 
+        void DoSetName(string name)
+        {
+            gameObject.name = name;
+        }
+
         void DoSetState(BoardState state)
         {
             SetNoneState();
@@ -54,7 +59,7 @@ namespace Konane.Game
 
         void ToggleOccupiable(bool active)
         {
-            SetInteractable(true);
+            SetInteractable(active);
             m_OccupiableIcon.enabled = active;
         }
 
