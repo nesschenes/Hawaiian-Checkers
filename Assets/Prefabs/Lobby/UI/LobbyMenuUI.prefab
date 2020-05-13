@@ -431,7 +431,7 @@ MonoBehaviour:
   m_TwoPlayer: {fileID: 1381986019426809998}
   m_ExitGame: {fileID: 1381986018409684401}
   m_BoardSizeUI: {fileID: 1381986019587523233}
-  m_BoardSizes: 0600000008000000
+  m_BoardSizes: 06000000080000000a0000000c000000
 --- !u!1 &1381986019288698059
 GameObject:
   m_ObjectHideFlags: 0
