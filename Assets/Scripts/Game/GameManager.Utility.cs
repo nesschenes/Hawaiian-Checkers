@@ -140,52 +140,31 @@ namespace Konane.Game
             return false;
         }
 
-        void FindTopOccupiableCoordinate(Coordinate coordinate, ref List<Coordinate> coordinates)
+        void FindAllOccupiableAndEatablePieces(Coordinate coordinate, ref Dictionary<Coordinate, Queue<Coordinate>> occupiable, ref Dictionary<Coordinate, Piece> eatable)
         {
-            var topCoordinate = coordinate + Coordinate.Top * 2;
-            if (IsValid(topCoordinate) && !HasPiece(topCoordinate) && HasPiece(coordinate + Coordinate.Top))
-            {
-                coordinates.Add(topCoordinate);
-                FindTopOccupiableCoordinate(topCoordinate, ref coordinates);
-            }
+            FindEatablePieces(coordinate, Coordinate.Top, ref occupiable, ref eatable);
+            FindEatablePieces(coordinate, Coordinate.Down, ref occupiable, ref eatable);
+            FindEatablePieces(coordinate, Coordinate.Left, ref occupiable, ref eatable);
+            FindEatablePieces(coordinate, Coordinate.Right, ref occupiable, ref eatable);
         }
 
-        void FindDownOccupiableCoordinate(Coordinate coordinate, ref List<Coordinate> coordinates)
+        void FindEatablePieces(Coordinate coordinate, Coordinate direction, ref Dictionary<Coordinate, Queue<Coordinate>> occupiable, ref Dictionary<Coordinate, Piece> eatable)
         {
-            var downCoordinate = coordinate + Coordinate.Down * 2;
-            if (IsValid(downCoordinate) && !HasPiece(downCoordinate) && HasPiece(coordinate + Coordinate.Down))
-            {
-                coordinates.Add(downCoordinate);
-                FindDownOccupiableCoordinate(downCoordinate, ref coordinates);
-            }
-        }
+            var eatableCoordinate = coordinate + direction;
+            var occupiableCoordinate = coordinate + direction * 2;
+            if (!IsValid(occupiableCoordinate)
+                || HasPiece(occupiableCoordinate)
+                || !TryGetPiece(eatableCoordinate, out var piece))
+                return;
 
-        void FindLeftOccupiableCoordinate(Coordinate coordinate, ref List<Coordinate> coordinates)
-        {
-            var leftCoordinate = coordinate + Coordinate.Left * 2;
-            if (IsValid(leftCoordinate) && !HasPiece(leftCoordinate) && HasPiece(coordinate + Coordinate.Left))
-            {
-                coordinates.Add(leftCoordinate);
-                FindLeftOccupiableCoordinate(leftCoordinate, ref coordinates);
-            }
-        }
+            var list = occupiable.TryGetValue(coordinate, out var lastResult)
+                           ? new Queue<Coordinate>(lastResult)
+                           : new Queue<Coordinate>();
+            list.Enqueue(occupiableCoordinate);
 
-        void FindRightOccupiableCoordinate(Coordinate coordinate, ref List<Coordinate> coordinates)
-        {
-            var rightCoordinate = coordinate + Coordinate.Right * 2;
-            if (IsValid(rightCoordinate) && !HasPiece(rightCoordinate) && HasPiece(coordinate + Coordinate.Right))
-            {
-                coordinates.Add(rightCoordinate);
-                FindRightOccupiableCoordinate(rightCoordinate, ref coordinates);
-            }
-        }
-
-        void FindOccupiableCoordinate(Coordinate coordinate, ref List<Coordinate> coordinates)
-        {
-            FindTopOccupiableCoordinate(coordinate, ref coordinates);
-            FindDownOccupiableCoordinate(coordinate, ref coordinates);
-            FindLeftOccupiableCoordinate(coordinate, ref coordinates);
-            FindRightOccupiableCoordinate(coordinate, ref coordinates);
+            eatable.Add(occupiableCoordinate, piece);
+            occupiable.Add(occupiableCoordinate, list);
+            FindEatablePieces(occupiableCoordinate, direction, ref occupiable, ref eatable);
         }
 
         bool IsValid(Coordinate coordinate)

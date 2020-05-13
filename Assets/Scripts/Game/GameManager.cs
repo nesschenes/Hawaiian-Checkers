@@ -17,6 +17,11 @@ namespace Konane.Game
         bool IsThisRoundOver => NextPieceType < mCurrentPieceTeam;
         int NextPieceType => mCurrentPieceTeam == mPieceTeamCount ? 1 : mCurrentPieceTeam + 1;
 
+        /// <summary> mapping coordinate(if the piece move to here) to the paths of coordinate </summary>
+        Dictionary<Coordinate, Queue<Coordinate>> mOccupiablePathDict = new Dictionary<Coordinate, Queue<Coordinate>>(8);
+        /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary
+        Dictionary<Coordinate, Piece> mEatablePieceDict = new Dictionary<Coordinate, Piece>();
+
         public void Generate()
         {
             mPieceTeamCount = GameSettings.PieceTypeCount;
@@ -176,9 +181,10 @@ namespace Konane.Game
             mSelectedPiece = piece;
             mSelectedPiece.SetAsWaitToMove();
 
-            var coordinates = new List<Coordinate>();
-            FindOccupiableCoordinate(mSelectedPiece.Coordinate, ref coordinates);
-            foreach (var coordinate in coordinates)
+            mOccupiablePathDict.Clear();
+            mEatablePieceDict.Clear();
+            FindAllOccupiableAndEatablePieces(mSelectedPiece.Coordinate, ref mOccupiablePathDict, ref mEatablePieceDict);
+            foreach (var coordinate in mOccupiablePathDict.Keys)
                 SetBoardToOccupiable(coordinate);
         }
 
@@ -189,36 +195,39 @@ namespace Konane.Game
             SetBoardToNone(mBoards);
             SetPieceToNone(mPieces);
 
-            MovePieceToCoordinate(mSelectedPiece, board.Coordinate, DoNextMoveTurnJob);
+            var coordinates = mOccupiablePathDict.TryGetValue(board.Coordinate, out var result) 
+                                  ? result
+                                  : new Queue<Coordinate>();
+            MovePieceToCoordinates(mSelectedPiece, coordinates, DoNextMoveTurnJob);
         }
 
-        void MovePieceToCoordinate(Piece piece, Coordinate target, Action onDone)
+        void MovePieceToCoordinates(Piece piece, Queue<Coordinate> coordinates, Action onDone)
         {
-            if (piece.Coordinate == target)
+            if (coordinates.Count == 0)
             {
                 onDone?.Invoke();
                 return;
             }
 
-            if (TryGetBoard(piece.Coordinate, out var fromBoard))
-                fromBoard.SetPiece(null);
+            if (TryGetBoard(piece.Coordinate, out var board))
+                board.SetPiece(null);
 
-            var direction = (target - piece.Coordinate).Direction;
-            var nextCoordinate = piece.Coordinate + direction * 2;
-            piece.SetCoordinateInTween(nextCoordinate, () => 
-            { 
-                OnPieceMoveComplete(piece); 
-                MovePieceToCoordinate(piece, target, onDone); 
-            });
+            var coordinate = coordinates.Dequeue();
+            piece.SetCoordinateInTween(coordinate,
+                                       () =>
+                                       {
+                                           OnPieceMoveComplete(piece);
+                                           MovePieceToCoordinates(piece, coordinates, onDone);
+                                       });
         }
 
         void OnPieceMoveComplete(Piece piece)
         {
-            if (TryGetBoard((piece.Coordinate + piece.LastCoordinate) / 2, out var crossedBoard))
-                crossedBoard.Piece.SetAsDead();
+            if (mEatablePieceDict.TryGetValue(piece.Coordinate, out var eatablePiece))
+                eatablePiece.SetAsDead();
 
-            if (TryGetBoard(piece.Coordinate, out var nextBoard))
-                nextBoard.SetPiece(piece);
+            if (TryGetBoard(piece.Coordinate, out var board))
+                board.SetPiece(piece);
         }
     }
 }
