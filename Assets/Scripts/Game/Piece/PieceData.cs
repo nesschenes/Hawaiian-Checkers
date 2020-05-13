@@ -16,8 +16,6 @@ namespace Konane.Game
     {
         public readonly int X;
         public readonly int Y;
-        public int Length => X + Y;
-        public Coordinate Direction => new Coordinate(NoramlizeX(), NoramlizeY());
 
         public Coordinate(int x, int y)
         {
