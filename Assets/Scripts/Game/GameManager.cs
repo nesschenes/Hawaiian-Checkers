@@ -38,8 +38,8 @@ namespace Konane.Game
                 for (var j = 0; j < mBoardRowsCount; j++) // columns
                 {
                     var index = i * mBoardRowsCount + j;
-                    var team = (i + j + 1) % 2 + 1; // 1, 2, 1, 2...
-                    var coordinate = new Coordinate(j, i);
+                    var team = (i + j + 1 + GameSettings.PieceTypeToBegin) % 2 + 1; // 1, 2, 1, 2...
+                    var coordinate = new Coordinate(j, i); // from (0, 0) to (boardSize, boardSize)
 
                     var boardData = new BoardData
                     {

@@ -7,5 +7,8 @@
 
         /// <summary> board is a square shape, so it means grid count as well (BoardRowsCount * BoardRowsCount). </summary>
         public static int BoardRowsCount = 8;
+
+        /// <summary> the game starts on which team. </summary>
+        public static int PieceTypeToBegin = 0;
     }
 }
