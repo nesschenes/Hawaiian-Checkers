@@ -1,5 +1,4 @@
 ﻿using Konane.Utility;
-using System.Collections;
 using UnityEngine;
 
 namespace Konane.Game
@@ -24,15 +23,13 @@ namespace Konane.Game
             Notify.LoadLobby += DoBackToLobbyJob;
         }
 
-        IEnumerator Start()
+        void Start()
         {
             GameStep = GameStep.GameBegin;
 
             Notify.RefreshScaler();
 
             m_GameManager.Generate();
-
-            yield return null;
 
             NextStep();
         }

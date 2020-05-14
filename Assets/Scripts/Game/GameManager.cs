@@ -14,17 +14,18 @@ namespace Konane.Game
         public Action OnRemoveStepDone = delegate { };
         public Action OnMoveStepDone = delegate { };
 
-        bool IsThisRoundOver => NextPieceType < mCurrentPieceTeam;
-        int NextPieceType => mCurrentPieceTeam == mPieceTeamCount ? 1 : mCurrentPieceTeam + 1;
+        bool IsThisRoundOver => NextPieceType < mCurrentPieceType;
+        int NextPieceType => mCurrentPieceType == mPieceTypeCount ? 1 : mCurrentPieceType + 1;
 
         /// <summary> mapping coordinate(if the piece move to here) to the paths of coordinate </summary>
         Dictionary<Coordinate, Queue<Coordinate>> mOccupiablePathDict = new Dictionary<Coordinate, Queue<Coordinate>>(8);
         /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary>
         Dictionary<Coordinate, Piece> mEatablePieceDict = new Dictionary<Coordinate, Piece>();
 
+        /// <summary> Generate the boards and pieces according to GameSettings </summary>
         public void Generate()
         {
-            mPieceTeamCount = GameSettings.PieceTypeCount;
+            mPieceTypeCount = GameSettings.PieceTypeCount;
             mBoardRowsCount = GameSettings.BoardRowsCount;
             mBoardGridCount = mBoardRowsCount * mBoardRowsCount;
             mBoards = new Board[mBoardGridCount];
@@ -41,52 +42,45 @@ namespace Konane.Game
                     var team = (i + j + 1 + GameSettings.PieceTypeToBegin) % 2 + 1; // 1, 2, 1, 2...
                     var coordinate = new Coordinate(j, i); // from (0, 0) to (boardSize, boardSize)
 
-                    var boardData = new BoardData
-                    {
-                        Name = $"Board {coordinate.X} - {coordinate.Y}",
-                        State = BoardState.None,
-                        Coordinate = coordinate,
-                        Color = m_BoardColor[team - 1]
-                    };
+                    var boardData = Generate<BoardData>(coordinate);
+                    boardData.Name = $"Board {coordinate.x} - {coordinate.y}";
+                    boardData.State = BoardState.None;
+                    boardData.Color = m_BoardColor[team - 1];
 
-                    var pieceData = new PieceData
-                    {
-                        Name = $"Piece {coordinate.X} - {coordinate.Y}",
-                        Team = team,
-                        State = PieceState.None,
-                        Coordinate = coordinate,
-                        LastCoordinate = coordinate,
-                        Color = m_PieceColor[team - 1],
-                    };
+                    var pieceData = Generate<PieceData>(coordinate);
+                    pieceData.LastCoordinate = coordinate;
+                    pieceData.Name = $"Piece {coordinate.x} - {coordinate.y}";
+                    pieceData.Team = team;
+                    pieceData.State = PieceState.None;
+                    pieceData.Color = m_PieceColor[team - 1];
 
-                    var piece = SpawnPiece(pieceData);
-                    piece.SetAsNothingToDo();
-                    var board = SpawnBoard(boardData);
+                    var board = Generate(m_Board, boardData, m_BoardPool);
+                    var piece = Generate(m_Piece, pieceData, m_PiecePool);
                     board.SetPiece(piece);
                     mBoards[index] = board;
                     mPieces[index] = piece;
                 }
             }
 
-            Debug.LogFormat("Generate {0}x{0} Boards & Pieces", mBoardRowsCount);
+            Debug.LogFormat("Generated {0}x{0} Boards & Pieces", mBoardRowsCount);
         }
 
         public void DoRemoveStepJob()
         {
-            mCurrentPieceTeam = 0;
+            mCurrentPieceType = 0;
             DoNextRemoveTurnJob();
         }
 
         public void DoMoveStepJob()
         {
-            mCurrentPieceTeam = 0;
+            mCurrentPieceType = 0;
             DoNextMoveTurnJob();
         }
 
         void DoNextRemoveTurnJob()
         {
-            ++mCurrentPieceTeam;
-            switch (mCurrentPieceTeam)
+            ++mCurrentPieceType;
+            switch (mCurrentPieceType)
             {
                 case 1:
                 {
@@ -104,19 +98,19 @@ namespace Konane.Game
                     break;
             }
 
-            Debug.LogFormat("Start {0} Remove-Turn", mCurrentPieceTeam);
+            Debug.LogFormat("Start {0} Remove-Turn", mCurrentPieceType);
         }
 
         void DoNextMoveTurnJob()
         {
-            mCurrentPieceTeam = NextPieceType;
+            mCurrentPieceType = NextPieceType;
             var hasMovablePiece = false;
             foreach (var piece in mPieces)
             {
                 if (piece.State == PieceState.Dead)
                     continue;
 
-                if (mCurrentPieceTeam != piece.Team)
+                if (mCurrentPieceType != piece.Team)
                     continue;
 
                 if (!IsPieceMovable(piece.Coordinate)) 
@@ -126,7 +120,7 @@ namespace Konane.Game
                 SetPieceToMovable(piece.Coordinate);
             }
 
-            Debug.LogFormat("Start {0} Move-Turn", mCurrentPieceTeam);
+            Debug.LogFormat("Start {0} Move-Turn", mCurrentPieceType);
 
             if (!hasMovablePiece)
             {
@@ -137,23 +131,22 @@ namespace Konane.Game
 
         void OnRemovablePieceSelected(Piece piece)
         {
+            // confirm to remove selected piece
             if (mSelectedPiece == piece)
             {
                 mSelectedPiece.SetAsDead();
 
+                // set all piece to none state and clear events
+                SetPieceToNone(mPieces);
+
                 if (IsThisRoundOver)
-                {
-                    SetPieceToNone(mPieces);
                     OnRemoveStepDone();
-                }
                 else
-                {
-                    SetPieceToNone(mPieces);
                     DoNextRemoveTurnJob();
-                }
             }
             else
             {
+                // change last selected piece from WaitToRemove to Removable because another piece is selected now
                 if (mSelectedPiece != null)
                     mSelectedPiece.SetAsRemovable();
 
@@ -199,26 +192,6 @@ namespace Konane.Game
                                   ? result
                                   : new Queue<Coordinate>();
             MovePieceToCoordinates(mSelectedPiece, coordinates, DoNextMoveTurnJob);
-        }
-
-        void MovePieceToCoordinates(Piece piece, Queue<Coordinate> coordinates, Action onDone)
-        {
-            if (coordinates.Count == 0)
-            {
-                onDone?.Invoke();
-                return;
-            }
-
-            if (TryGetBoard(piece.Coordinate, out var board))
-                board.SetPiece(null);
-
-            var coordinate = coordinates.Dequeue();
-            piece.SetCoordinateInTween(coordinate,
-                                       () =>
-                                       {
-                                           OnPieceMoveComplete(piece);
-                                           MovePieceToCoordinates(piece, coordinates, onDone);
-                                       });
         }
 
         void OnPieceMoveComplete(Piece piece)

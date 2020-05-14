@@ -1,27 +1,10 @@
 ﻿using System;
-
-using Konane.Renderer;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Konane.Game
 {
-    public enum PieceState
+    public partial class Piece : CoordinateMono<Piece, PieceData>, ICoordinateEntity<PieceData>
     {
-        None = 0,
-        Removable = 1,
-        WaitToRemove = 2,
-        Movable = 3,
-        WaitToMove = 4,
-        Dead = 999
-    }
-
-    public partial class Piece : MonoBehaviour
-    {
-        [SerializeField]
-        Button m_Button = null;
-        [SerializeField]
-        SpriteRenderer m_Icon = null;
         [SerializeField]
         SpriteRenderer m_HighlightIcon = null;
         [SerializeField]
@@ -35,17 +18,13 @@ namespace Konane.Game
         public Coordinate LastCoordinate { get => Data.LastCoordinate; }
         public Color Color { get => Data.Color; private set => Data.Color = value; }
 
-        public PieceEvent OnDown = new PieceEvent();
-        public PieceEvent OnDespawn = new PieceEvent();
-
-        public class PieceEvent : UnityEvent<Piece> { }
-
         public void Init(PieceData data)
         {
             Data = data;
 
             DoSetName(data.Name);
             DoSetTeam(data.Team);
+            DoSetState(data.State);
             DoSetCooridinate(data.Coordinate);
             DoSetColor(data.Color);
         }
@@ -129,24 +108,16 @@ namespace Konane.Game
             DoSetCooridinate(coordinate);
         }
 
-        public void SetCoordinateInTween(Coordinate coordinate, Action onDone = null)
+        public void SetCoordinateInTween(Coordinate coordinate, Action onComplete = null)
         {
             Coordinate = coordinate;
-            DoSetCooridinateInTween(coordinate, onDone);
+            DoSetCooridinateInTween(coordinate, onComplete);
         }
 
         public void SetColor(Color color)
         {
             Color = color;
             DoSetColor(color);
-        }
-
-        public void SetInteractable(bool enable)
-        {
-            if (enable)
-                m_Button.Active();
-            else
-                m_Button.Deactive();
         }
     }
 }

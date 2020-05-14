@@ -4,16 +4,6 @@ namespace Konane.Game
 {
     public partial class Board
     {
-        void Awake()
-        {
-            m_Button.OnDown.AddListener(OnButtonDown);
-        }
-
-        void OnDestroy()
-        {
-            m_Button.OnDown.RemoveAllListeners();
-        }
-
         void DoSetName(string name)
         {
             gameObject.name = name;
@@ -21,11 +11,10 @@ namespace Konane.Game
 
         void DoSetState(BoardState state)
         {
-            SetNoneState();
-
             switch (state)
             {
                 case BoardState.None:
+                    SetAsNone();
                     break;
                 case BoardState.Occupiable:
                     ToggleOccupiable(true);
@@ -51,15 +40,8 @@ namespace Konane.Game
             m_Icon.material.SetInt("_Col", y);
         }
 
-        void SetNoneState()
-        {
-            SetInteractable(false);
-            ToggleOccupiable(false);
-        }
-
         void ToggleOccupiable(bool active)
         {
-            SetInteractable(active);
             m_OccupiableIcon.enabled = active;
         }
 
@@ -68,14 +50,13 @@ namespace Konane.Game
             if (Piece == null)
                 return;
 
-            Piece.gameObject.SetActive(false);
             Piece.OnDespawn.RemoveListener(OnPieceDespawn);
             Piece = null;
         }
 
-        void OnButtonDown()
+        protected override void OnButtonDown()
         {
-            OnDown.Invoke(this);
+            OnDown?.Invoke(this);
         }
     }
 }

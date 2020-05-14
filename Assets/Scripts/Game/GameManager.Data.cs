@@ -17,8 +17,8 @@ namespace Konane.Game
         [SerializeField]
         Color[] m_PieceColor = null;
 
-        int mCurrentPieceTeam = 1;
-        int mPieceTeamCount = 2;
+        int mCurrentPieceType = 1;
+        int mPieceTypeCount = 2;
         int mBoardGridCount = 36;
         int mBoardRowsCount = 6;
         Board[] mBoards = null;

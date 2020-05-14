@@ -1,21 +1,9 @@
-﻿using Konane.Renderer;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
 namespace Konane.Game
 {
-    public enum BoardState
-    { 
-        None,
-        Occupiable,
-    }
-
-    public partial class Board : MonoBehaviour
+    public partial class Board : CoordinateMono<Board, BoardData>, ICoordinateEntity<BoardData>
     {
-        [SerializeField]
-        Button m_Button = null;
-        [SerializeField]
-        SpriteRenderer m_Icon = null;
         [SerializeField]
         SpriteRenderer m_OccupiableIcon = null;
 
@@ -27,24 +15,19 @@ namespace Konane.Game
         public Coordinate Coordinate { get => Data.Coordinate; private set => Data.Coordinate = value; }
         public Color Color { get => Data.Color; private set => Data.Color = value; }
 
-        public BoardEvent OnDown = new BoardEvent();
-        public BoardEvent OnDespawn = new BoardEvent();
-
-        public class BoardEvent : UnityEvent<Board> { }
-
         public void Init(BoardData data)
         {
             Data = data;
 
             DoSetName(data.Name);
             DoSetState(data.State);
-            DoSetColor(data.Color);
             DoSetCoordinate(data.Coordinate);
+            DoSetColor(data.Color);
 
             SetRandomUV();
         }
 
-        public void ClearInputEvents()
+        public void ClearEvents()
         {
             OnDown.RemoveAllListeners();
         }
@@ -69,21 +52,18 @@ namespace Konane.Game
                 Piece.OnDespawn.AddListener(OnPieceDespawn);
         }
 
-        public void SetState(BoardState state)
+        public void SetAsNone()
         {
-            if (State == state)
-                return;
-
-            State = state;
-            DoSetState(State);
+            State = BoardState.None;
+            ToggleOccupiable(false);
+            SetInteractable(false);
         }
 
-        public void SetInteractable(bool enable)
+        public void SetAsOccupiable()
         {
-            if (enable)
-                m_Button.Active();
-            else
-                m_Button.Deactive();
+            State = BoardState.Occupiable;
+            ToggleOccupiable(true);
+            SetInteractable(true);
         }
     }
 }

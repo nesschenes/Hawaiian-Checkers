@@ -8,21 +8,7 @@ namespace Konane.Game
     public partial class Piece
     {
         Sequence mMoveAnim = null;
-        Queue<MoveTweenUnit> mNextCoordinates = new Queue<MoveTweenUnit>();
-
-        void Awake()
-        {
-            m_Button.OnDown.AddListener(OnButtonDown);
-        }
-
-        void OnDestroy()
-        {
-            m_Button.OnDown.RemoveAllListeners();
-            m_Button.OnUp.RemoveAllListeners();
-            m_Button.OnUpAsButton.RemoveAllListeners();
-
-            ClearEvents();
-        }
+        Queue<ICoordinateTween> mNextCoordinates = new Queue<ICoordinateTween>();
 
         void DoSetName(string name)
         {
@@ -34,14 +20,42 @@ namespace Konane.Game
 
         }
 
+        void DoSetState(PieceState state)
+        {
+            switch (state)
+            {
+                case PieceState.None:
+                    SetAsNothingToDo();
+                    break;
+                case PieceState.Removable:
+                    SetAsRemovable();
+                    break;
+                case PieceState.WaitToRemove:
+                    SetAsWaitToRemove();
+                    break;
+                case PieceState.Movable:
+                    SetAsMovable();
+                    break;
+                case PieceState.WaitToMove:
+                    SetAsWaitToMove();
+                    break;
+                case PieceState.Dead:
+                    SetAsDead();
+                    break;
+                default:
+                    Debug.LogErrorFormat("Undefined PieceState : {0}", state);
+                    break;
+            }
+        }
+
         void DoSetCooridinate(Coordinate coordinate)
         {
             transform.position = GameUtility.CoordinateToPosition(coordinate);
         }
 
-        void DoSetCooridinateInTween(Coordinate coordinate, Action onDone = null)
+        void DoSetCooridinateInTween(Coordinate coordinate, Action onComplete = null)
         {
-            var unit = new MoveTweenUnit(coordinate, onDone);
+            var unit = new CoordniateTween(coordinate, onComplete);
             mNextCoordinates.Enqueue(unit);
             DoNextCooridinateInTween();
         }
@@ -89,21 +103,9 @@ namespace Konane.Game
             m_SelectedIcon.enabled = active;
         }
 
-        void OnButtonDown()
+        protected override void OnButtonDown()
         {
-            OnDown.Invoke(this);
-        }
-
-        class MoveTweenUnit
-        {
-            public Coordinate Coordinate;
-            public Action OnComplete;
-
-            public MoveTweenUnit(Coordinate coordinate, Action onDone)
-            {
-                Coordinate = coordinate;
-                OnComplete = onDone;
-            }
+            OnDown?.Invoke(this);
         }
     }
 }

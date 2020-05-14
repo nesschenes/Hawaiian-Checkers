@@ -12,7 +12,7 @@ namespace Konane.Game
                 return Vector2.zero;
             }
 
-            return GameManager.Instance.BoardStartPosition + new Vector2(coordinate.X, coordinate.Y);
+            return GameManager.Instance.BoardStartPosition + new Vector2(coordinate.x, coordinate.y);
         }
     }
 }
