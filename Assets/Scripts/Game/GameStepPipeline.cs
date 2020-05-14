@@ -3,14 +3,6 @@ using UnityEngine;
 
 namespace Konane.Game
 {
-    public enum GameStep
-    {
-        GameBegin,
-        Remove,
-        Move,
-        GameOver,
-    }
-
     public class GameStepPipeline : MonoBehaviour
     {
         [SerializeField]
