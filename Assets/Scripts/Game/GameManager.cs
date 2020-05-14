@@ -11,15 +11,15 @@ namespace Konane.Game
         public Vector2 BoardStartPosition { get; private set; }
         public int Winner { get; private set; }
 
-        public Action OnRemoveStepDone = null;
-        public Action OnMoveStepDone = null;
+        public Action OnRemoveStepDone = delegate { };
+        public Action OnMoveStepDone = delegate { };
 
         bool IsThisRoundOver => NextPieceType < mCurrentPieceTeam;
         int NextPieceType => mCurrentPieceTeam == mPieceTeamCount ? 1 : mCurrentPieceTeam + 1;
 
         /// <summary> mapping coordinate(if the piece move to here) to the paths of coordinate </summary>
         Dictionary<Coordinate, Queue<Coordinate>> mOccupiablePathDict = new Dictionary<Coordinate, Queue<Coordinate>>(8);
-        /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary
+        /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary>
         Dictionary<Coordinate, Piece> mEatablePieceDict = new Dictionary<Coordinate, Piece>();
 
         public void Generate()
@@ -119,11 +119,11 @@ namespace Konane.Game
                 if (mCurrentPieceTeam != piece.Team)
                     continue;
 
-                if (IsPieceMovable(piece.Coordinate))
-                {
-                    hasMovablePiece = true;
-                    SetPieceToMovable(piece.Coordinate);
-                }
+                if (!IsPieceMovable(piece.Coordinate)) 
+                    continue;
+
+                hasMovablePiece = true;
+                SetPieceToMovable(piece.Coordinate);
             }
 
             Debug.LogFormat("Start {0} Move-Turn", mCurrentPieceTeam);
@@ -131,7 +131,7 @@ namespace Konane.Game
             if (!hasMovablePiece)
             {
                 Winner = NextPieceType;
-                OnMoveStepDone.Invoke();
+                OnMoveStepDone();
             }
         }
 
@@ -144,7 +144,7 @@ namespace Konane.Game
                 if (IsThisRoundOver)
                 {
                     SetPieceToNone(mPieces);
-                    OnRemoveStepDone.Invoke();
+                    OnRemoveStepDone();
                 }
                 else
                 {

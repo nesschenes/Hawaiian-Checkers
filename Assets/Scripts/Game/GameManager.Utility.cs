@@ -6,9 +6,9 @@ namespace Konane.Game
     {
         Board SpawnBoard(BoardData data)
         {
-            var boardUnit = Instantiate(m_Board, m_BoardPool);
-            boardUnit.Init(data);
-            return boardUnit;
+            var board = Instantiate(m_Board, m_BoardPool);
+            board.Init(data);
+            return board;
         }
 
         Piece SpawnPiece(PieceData data)
@@ -28,11 +28,11 @@ namespace Konane.Game
 
             foreach (var board in mBoards)
             {
-                if (board.Coordinate == coordinate)
-                {
-                    result = board;
-                    return true;
-                }
+                if (board.Coordinate != coordinate) 
+                    continue;
+
+                result = board;
+                return true;
             }
 
             result = null;
@@ -52,11 +52,11 @@ namespace Konane.Game
                 if (piece.State == PieceState.Dead)
                     continue;
 
-                if (piece.Coordinate == coordinate)
-                {
-                    result = piece;
-                    return true;
-                }
+                if (piece.Coordinate != coordinate) 
+                    continue;
+
+                result = piece;
+                return true;
             }
 
             result = null;
