@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Konane.Game
 {
@@ -24,5 +25,10 @@ namespace Konane.Game
         Board[] mBoards = null;
         Piece[] mPieces = null;
         Piece mSelectedPiece = null;
+
+        /// <summary> mapping coordinate(if the piece move to here) to the paths of coordinate </summary>
+        Dictionary<Coordinate, Queue<Coordinate>> mOccupiablePathDict = new Dictionary<Coordinate, Queue<Coordinate>>(8);
+        /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary>
+        Dictionary<Coordinate, Piece> mEatablePieceDict = new Dictionary<Coordinate, Piece>();
     }
 }

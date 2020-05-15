@@ -17,11 +17,6 @@ namespace Konane.Game
         bool IsThisRoundOver => NextPieceType < mCurrentPieceType;
         int NextPieceType => mCurrentPieceType == mPieceTypeCount ? 1 : mCurrentPieceType + 1;
 
-        /// <summary> mapping coordinate(if the piece move to here) to the paths of coordinate </summary>
-        Dictionary<Coordinate, Queue<Coordinate>> mOccupiablePathDict = new Dictionary<Coordinate, Queue<Coordinate>>(8);
-        /// <summary> mapping coordinate(if the piece move to here) to the coordinate be eaten </summary>
-        Dictionary<Coordinate, Piece> mEatablePieceDict = new Dictionary<Coordinate, Piece>();
-
         /// <summary> Generate the boards and pieces according to GameSettings </summary>
         public void Generate()
         {
