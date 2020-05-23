@@ -8,22 +8,21 @@ namespace Konane.Game
         [SerializeField]
         GameManager m_GameManager = null;
 
-        public GameStep GameStep { get; private set; }
+        public static GameStep GameStep { get; private set; }
 
         void Awake()
         {
             Notify.LoadLobby += DoBackToLobbyJob;
+            InputManager.OnEscape += OnEscape;
         }
 
         void Start()
         {
-            GameStep = GameStep.GameBegin;
-
             Notify.RefreshScaler();
 
-            m_GameManager.Generate();
+            GameStep = GameStep.GameBegin;
 
-            NextStep();
+            DoStepJob();
         }
 
         void OnDestroy()
@@ -31,44 +30,61 @@ namespace Konane.Game
             m_GameManager.OnRemoveStepDone -= OnRemoveStepDone;
             m_GameManager.OnMoveStepDone -= OnMoveStepDone;
             Notify.LoadLobby -= DoBackToLobbyJob;
+            InputManager.OnEscape -= OnEscape;
         }
 
-        void NextStep()
+        void DoStepJob()
         {
             switch (GameStep)
             {
                 case GameStep.GameBegin:
-                    DoRemoveStepJob();
+                    DoGameBeginStepJob();
                     break;
                 case GameStep.Remove:
-                    DoMoveStepJob();
+                    DoRemoveStepJob();
                     break;
                 case GameStep.Move:
-                    DoGameOverJob();
+                    DoMoveStepJob();
                     break;
                 case GameStep.GameOver:
-                    DoBackToLobbyJob();
+                    DoGameOverJob();
                     break;
             }
         }
 
+        void DoGameBeginStepJob()
+        {
+            if (GameData.LastData != null)
+            {
+                m_GameManager.Resume(GameData.LastData);
+
+                GameStep = GameData.LastData.GameStep;
+            }
+            else
+            {
+                m_GameManager.Generate();
+
+                GameStep = GameStep.Remove;
+            }
+
+            DoStepJob();
+        }
+
         void DoRemoveStepJob()
         {
-            GameStep = GameStep.Remove;
             m_GameManager.OnRemoveStepDone += OnRemoveStepDone;
             m_GameManager.DoRemoveStepJob();
         }
 
         void DoMoveStepJob()
         {
-            GameStep = GameStep.Move;
             m_GameManager.OnMoveStepDone += OnMoveStepDone;
             m_GameManager.DoMoveStepJob();
         }
 
         void DoGameOverJob()
         {
-            GameStep = GameStep.GameOver;
+            GameUtility.Clear();
             Notify.GameResult(m_GameManager.Winner);
         }
 
@@ -81,13 +97,32 @@ namespace Konane.Game
         void OnRemoveStepDone()
         {
             m_GameManager.OnRemoveStepDone -= OnRemoveStepDone;
-            NextStep();
+
+            GameStep = GameStep.Move;
+            DoStepJob();
         }
 
         void OnMoveStepDone()
         {
             m_GameManager.OnMoveStepDone -= OnMoveStepDone;
-            NextStep();
+
+            GameStep = GameStep.GameOver;
+            DoStepJob();
+        }
+
+        void OnEscape()
+        {
+            switch (GameStep)
+            {
+                default:
+                    m_GameManager.Save();
+                    DoBackToLobbyJob();
+                    break;
+                case GameStep.GameOver:
+                    GameUtility.Clear();
+                    DoBackToLobbyJob();
+                    break;
+            }
         }
     }
 }

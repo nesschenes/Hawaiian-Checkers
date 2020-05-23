@@ -23,6 +23,15 @@
             return false;
         }
 
+        Coordinate FindBoardHasNoPiece()
+        {
+            foreach (var board in mBoards)
+                if (!board.HasPiece)
+                    return board.Coordinate;
+
+            return Coordinate.zero;
+        }
+
         void SetBoardToNone(Board[] boards)
         {
             foreach (var board in boards)

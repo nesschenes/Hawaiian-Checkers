@@ -9,6 +9,6 @@
         public static int BoardRowsCount = 8;
 
         /// <summary> the game starts on which team. </summary>
-        public static int PieceTypeToBegin = 0;
+        public static int PieceTypeToBegin = 1;
     }
 }

@@ -1,10 +1,13 @@
-﻿namespace Konane.Game
+﻿using System;
+
+namespace Konane.Game
 {
     /// <summary> Handle (x, y) that something like vector2 but integer </summary>
+    [Serializable]
     public struct Coordinate
     {
-        public readonly int x;
-        public readonly int y;
+        public int x;
+        public int y;
 
         public Coordinate(int x, int y)
         {

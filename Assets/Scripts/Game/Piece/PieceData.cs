@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Konane.Game
 {
+    [Serializable]
     public class PieceData : ICoordinateData
     {
         public string Name;

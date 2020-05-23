@@ -4,6 +4,9 @@ namespace Konane
 {
     public static class Notify
     {
+        /// <summary> notify resume the last game </summary>
+        public static Action ResumeGame = delegate { };
+
         /// <summary> notify load lobby scene to choose the game </summary>
         public static Action LoadLobby = delegate { };
 

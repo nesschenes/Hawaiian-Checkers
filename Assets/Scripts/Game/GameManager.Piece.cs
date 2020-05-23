@@ -40,9 +40,8 @@ namespace Konane.Game
             }
         }
 
-        void SetAroundPieceToRemovable(Piece piece)
+        void SetAroundPieceToRemovable(Coordinate coordinate)
         {
-            var coordinate = piece.Coordinate;
             SetPieceToRemovable(coordinate + Coordinate.top);
             SetPieceToRemovable(coordinate + Coordinate.down);
             SetPieceToRemovable(coordinate + Coordinate.left);
