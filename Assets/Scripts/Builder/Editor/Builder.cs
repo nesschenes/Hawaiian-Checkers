@@ -7,6 +7,13 @@ namespace Konane.Builder
 {
     public class Builder
     {
+        [MenuItem("Tools/Build/All")]
+        public static void BuildAll()
+        {
+            BuildWindows();
+            BuildAndroid();
+        }
+
         [MenuItem("Tools/Build/Windows")]
         public static void BuildWindows()
         {
