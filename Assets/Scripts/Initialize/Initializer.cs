@@ -12,8 +12,8 @@ namespace Konane
 
         void Start()
         {
-            SceneUtility.LoadLobbyScene();
-            SceneUtility.LoadLobbyUIScene();
+            SceneUtility.LoadMenuScene();
+            SceneUtility.LoadMenuUIScene();
         }
 
         void Setup()

@@ -90,8 +90,8 @@ namespace Konane.Game
 
         void DoBackToLobbyJob()
         {
-            SceneUtility.LoadLobbyScene();
-            SceneUtility.LoadLobbyUIScene();
+            SceneUtility.LoadMenuScene();
+            SceneUtility.LoadMenuUIScene();
         }
 
         void OnRemoveStepDone()

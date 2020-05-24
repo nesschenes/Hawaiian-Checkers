@@ -4,14 +4,14 @@ namespace Konane.Utility
 {
     public static class SceneUtility
     {
-        public static void LoadLobbyScene()
+        public static void LoadMenuScene()
         {
-            SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
+            SceneManager.LoadScene("Menu", LoadSceneMode.Single);
         }
 
-        public static void LoadLobbyUIScene()
+        public static void LoadMenuUIScene()
         {
-            SceneManager.LoadScene("LobbyUI", LoadSceneMode.Additive);
+            SceneManager.LoadScene("MenuUI", LoadSceneMode.Additive);
         }
 
         public static void LoadGameScene()
